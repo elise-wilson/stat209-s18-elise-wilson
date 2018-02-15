@@ -1,0 +1,92 @@
+---
+title: "Student Gym Preferences"
+author: "Elise Wilson"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readr)
+library(dplyr)
+library(ggplot2)
+library(plotly)
+```
+
+# Student Gym Preferences
+
+## Overview
+
+For my project, I began by asking the question, "What are the patterns that exist in the gym preferences of college students?" Specifically, I was interested in the differences in preferences between female and male university students. To begin answering this question, I first needed to collect data. To fulfill this task, I created a Google Forms survey asking five questions pertaining to the preferences at the gym of 76 different respondents. The questions collected data regarding gender, timing, and preferred activities of each respondent. I was interested to see if there were any patterns in preferences both with students as a whole group, as well as whether there were differences in preferences for each gender. The data and graphs below details the patterns that I found through my research.
+
+## Data dictionary
+
+Here is a data dictionary for the `student_gym_preferences` dataset:
+
+- **gender**: a catagorical variable giving each respondent's gender. Possible options are: "Female", "Male", "Non-Binary/Other"
+- **visits_per_week_on_average**: a numeric variable giving the number of times each respondent visits the gym per week on average
+- **time_of_day**: a catagorical variable giving the time of day each respondent visits the gym on average. Possible options include: "Morning", "Afternoon", "Evening", "Late-Night"
+- **length_of_workout_in_hours**: a numeric variable giving the average length of each respondent's workout in hours
+- **favorite_activity**: a categorical variable giving each respondent's preferred gym activity. Possible options include: "Indoor Track", "Machine Weights", "Free Weights", "Cardio", "Classes", "Pool", "Courts"
+
+Which can be read in as follows:
+
+```{r, echo=FALSE}
+student_gym_preferences <- read_csv("https://raw.githubusercontent.com/URstats/stat209-s18-elise-wilson/master/student_gym_preferences.csv")
+student_gym_preferences
+```
+
+## Exploratory Analysis
+
+For this project, I was interested in seeing the difference in preferences between females and males concerning the university gym. The graphs shown below compile the data that I collected and examine patterns between them. 
+
+```{r, echo=FALSE}
+ggplot(student_gym_preferences, aes(visits_per_week_on_average)) +
+  geom_bar(aes(fill = gender), position = "dodge") +
+  xlab ("Visits Per Week") +
+  ylab ("Response Count") +
+  labs (color = "Gender") +
+  ggtitle ("Average Gym Visits Per Week by Gender")
+```
+
+The first graph above is a graphic representation of the average number of times per week that students of each gender visit the gym. It is important to note that for both genders, visiting the gym four times a week recieved the most reponses. Additionally, though, for females, most reponses were tied between students visiting the gym either twice a week or four times a week. This is a point of interest because it shows that many men and women are fairly equivalent in their dedication to going to the gym during the week.
+
+```{r, echo=FALSE}
+ggplot(student_gym_preferences, aes(time_of_day)) +
+  geom_bar(aes(fill = gender), position = "dodge") +
+  xlab ("Time of Day") +
+  ylab ("Response Count") +
+  labs (color = "Gender") +
+  ggtitle ("Time of Day of Workouts by Gender")
+```
+
+This second graph shown above is a comparison between the preferences (separated by gender) of the time of day that respondents like to workout on average. The data shows that the most popular time of day to workout for both genders is the afternoon. This preference is quite drastically preferred in comparison to the other options. Another point of interest is that morning workouts were only preferred by fewer than 10 total respondents.
+
+```{r, echo=FALSE}
+ggplot(student_gym_preferences, aes(length_of_workout_in_hours)) +
+  geom_bar(aes(fill = gender), position = "dodge") +
+  xlab ("Length of Workouts (Hours)") +
+  ylab ("Response Count") +
+  labs (color = "Gender") +
+  ggtitle ("Average Length of Workouts by Gender")
+```
+
+Interestingly, preferences regarding the length of respondent's workouts differs between male and female respondents, as shown above. Females tend to be fairly consistent in their preference of 1.0 hour workouts on average, while male respondents prefer 1.5 hour workouts. Very few respondents preferred the two opposite ends of the spectrum of given times, 0.5 and 2.0 hours. One could infer from this data that not only do different genders vary in their preferred workout time, but students of college age in general have a strong preference for workouts that last somewhere around 1.0 hours.
+
+```{r, echo=FALSE}
+ggplot(student_gym_preferences, aes(favorite_activity)) +
+  geom_bar(aes(fill = gender)) +
+  xlab ("Favorite Activity") +
+  ylab ("Reponse Count") +
+  labs (color = "Gender") +
+  ggtitle ("Favorite Activity by Gender")
+```
+
+The final graph shown above measures the favorite activities of different genders on average. It is interesting to note that there are a few activities that only one of the genders responded was their favorite. For example, the fitness classes offered at the gym were only preferred by females, with no males responding that they enjoyed the classes. Another example is the basketball courts. No female respondents marked the courts as their preferred activity. Additionally, there are several options where one gender preferred said activity drastically more than the other gender. Examples of this phenomenon include the cardio stations (where females much prefer this option to males), and the free weights area (where males much prefer this option to females). Another interesting point is that there was actually a seventh option offered for respondents to choose as their favorite activity at the gym. This activity was the pool. As the graph shows, none of the 76 respondents chose the pool as their preferred activity. 
+
+## Conclusion
+
+The goal of this project was to learn more about the gym preferences of students at the University of Richmond. Through my data collection and my interpretation of the graphs that are included above, I have determined that there are quite significant differences between females and males in most areas when it comes to their gym preferences. The differences that stood out most to me were the differences in the favorite activities at the gym. The difference in gender between preferring cardio or free weights matches up with what I believe to be the stereotype of differences between men and women when it comes to working out and athletics. This is an unfortunate observation in my opinion, as I believe that both men and women should feel confident doing all types of activities at the gym and in other aspects of athletics. I hope that displaying the data that I collected will empower students to try something new when going through their gym routine, so that the statistics may be balanced out and both genders feel comfortable doing anything in athletics that they put their mind to.
+
+
