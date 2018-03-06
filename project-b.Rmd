@@ -1,0 +1,90 @@
+---
+title: "Demographic Trends in the Austin Area"
+author: "Elise Wilson"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+knitr::opts_chunk$set(fig.height = 5)
+knitr::opts_chunk$set(fig.width = 8.5)
+knitr::opts_chunk$set(out.width = "100%")
+knitr::opts_chunk$set(dpi = 300)
+
+library(readr)
+library(ggplot2)
+library(dplyr)
+library(ggmap)
+library(viridis)
+```
+
+
+```{r}
+tracts <- read_csv("https://raw.githubusercontent.com/statsmaths/stat_data/gh-pages/acs_tract_data_2016.csv.gz") 
+austin <- filter(tracts, cbsa == "Austin-Round Rock, TX")
+```
+
+## Introduction to Austin
+
+The city of Austin, Texas has long been regarded as the live music capital of the world. With a desirable climate for the majority of the year, over 250 music and entertainment venues, and the lively arts scene, Austin is an amazing place to visit and live. To further amplify the city’s dedication to live music, Austin hosts Austin City Limits every fall, a music festival that attracts performers and concert-goers from all over both the country and the world. The food scene boasts breakfast tacos, barbeque, and a flair of Mexican culture everywhere you look. Within the city limits, Austin has a population of 947,890 as of 2016, is the fastest growing city in the country at this point in time, and there is a projection that by 2030, the population of the metropolitan area alone may reach 3.2 million. That number does not even include the surrounding areas such as Round Rock, which boasts its own population of 120, 892 as of 2016. Austin is being flooded with mainly young, just out of school people who are looking for a lively, vibrant city to call their home. Because of this influx of people just starting to accumulate their wealth, the wealth and demographic distributions have begun to become less separate than they have been in the past. Still, though, there are interesting trends concerning demographics and wealth distributions surrounding the city of Austin. These trends have been around for quite a while throughout Austin’s history, and they are just now beginning to change as various parts of the city become increasingly gentrified. An exploration of these long-standing trends are what follow.
+
+## Exploration of Austin's Racial Trends
+
+Those who live in Austin or who are familiar with the layout of the city would know that the East Side of the city has always been set apart from the areas further west, where more often than not, the wealthier, white families have made their homes. This fact has slowly begun to change as younger people who are just starting out have begun to move in large numbers to the city, and the East Side has become increasingly packed full of young people looking to make their way in the city. Because of this change, restaurants, art galleries, and other eclectic classically “Austin” business have cropped up on the East Side, slowly transforming it from an area of low income and minority races to a more gentrified version of its former self. One example of this change is the new number of music venues and “still young and mostly-free East Side clubs just across IH-35.” Still, however, there are some noticeable splits and differences between the two sides of the city. The graph below is a perfect representation of this fact. The yellow and the lighter green dots on the map indicate that 80-100% of the population is of the white racial demographic. The darker the dots get the lower the percentage of white people are in that area, and the higher the percentage of other races. The scale ends at 50% of people being white and the remaining 50% being of another race, when the dots are dark purple. The graph also shows that the darker purple and blue dots are clustered in higher numbers on the eastern side of the city, which is proof of the statement made earlier about the white wealthy people being found in higher numbers on the western side of the city. 
+
+```{r}
+qmplot(lon, lat, data = austin, geom = "blank") +
+  geom_point(aes(color = race_white), alpha = 0.8) +
+  scale_color_viridis() +
+  ggtitle ("Racial Trends") +
+  labs (color = "Percentage of Population That is White")
+```
+
+## Exploration of Austin's Income Demographics
+
+As can be seen from the graph below, there are a large amount of residents living in and around Austin who have an income that is within the fourth and fifth quartile of income. Additionally, it is important to note that there is a small region of data where the income is significantly higher than the norm. The majority of the dots on the graphs are dark purple, particularly more on the eastern side of the map. But, interestingly, there is a portion of the dots that are yellow and light green, indicating that the income of the residents who live in this area is mostly between 9e+05 to 7e+05. This is quite a significant difference from the majority of the surrounding data, where the income is between 1e+05 and 6e+05. While this lower income is still in the top two quartiles, the yellow and green dots are still considered to be outliers, showing a distinct area of immense wealth.
+
+```{r}
+austin$hh_income_top <- austin$hh_income_q4 + austin$hh_income_q5 
+```
+
+
+```{r}
+qmplot(lon, lat, data = austin, geom = "blank") +
+  geom_point(aes(color = hh_income_top), alpha = 0.8) +
+  scale_color_viridis() +
+  ggtitle ("Income in the Top Quartiles") +
+  labs (color = "Income in Fourth and Fifth Quartiles")
+```
+
+## Exploration of the Gini Index in Austin
+
+The Gini Index or the Gini Coefficient is a “measure of statistical dispersion intended to represent the income or wealth distribution” of a group of residents in a particular place. If the coefficient is zero, then the income is perfectly equal between all of the area’s residents. The greater the coefficient, the more income inequality there is in that area. If the coefficient is equal to 1, then the maximum amount of inequality between incomes has been reached. As shown in the graph of the Austin area below, the closer to the city center you are, the higher the Gini Coefficient, and therefore the higher the income inequality. This observation further supports the previous observations that the center to the east of the city has more racial minorities as well as less earned income on average. Interestingly enough, to the north and south of the center of the city, the Gini Coefficient is lower, perhaps implying that residents of average wealth congregate in these area of the city. 
+
+```{r}
+qmplot(lon, lat, data = austin, geom = "blank") +
+  geom_point(aes(color = hh_gini), alpha = 0.8) +
+  scale_color_viridis() +
+  ggtitle ("Gini Index Across Austin Area") +
+  labs (color = "Gini Coefficient")
+```
+
+## Conclusion
+
+As can be seen from the data put forth in the three above graphs, Austin is a place that has many disparities. The hope is that with this new influx of people moving in, these disparities will lessen. Unfortunately, though, a more common scenario is that those people who remain in the minority will be forced out and while the visible evidence of minorities and poverty will lessen, the underlying disparities will still remain. 
+
+## References
+
+“Austin Population 2018.” Austin Population 2018 (Demographics, Maps, Graphs), 2017, worldpopulationreview.com/us-cities/austin-population/.
+
+“Demographic Maps.” Home, www.austintexas.gov/page/demographic-maps.
+
+Bureau, US Census. “Census.gov.” Census.gov, www.census.gov/.
+
+Visit Austin, Austin, Texas, www.austintexas.org/.
+
+“Gini Coefficient.” Wikipedia, Wikimedia Foundation, 3 Mar. 2018, en.wikipedia.org/wiki/Gini_coefficient.
