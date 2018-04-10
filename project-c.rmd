@@ -1,0 +1,104 @@
+---
+title: "How Trends Differ By News Sites"
+author: "Elise Wilson"
+output: html_document
+---
+
+```{r setup, include=FALSE, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+knitr::opts_chunk$set(out.width = "100%")
+knitr::opts_chunk$set(dpi = 300)
+
+library(readr)
+library(ggplot2)
+library(dplyr)
+library(ggmap)
+library(viridis)
+library(forcats)
+library(smodels)
+```
+
+```{r}
+newsdata <- read_csv("~/Desktop/newsdata.csv")
+```
+
+
+## Introduction
+
+For this project, I was interested in looking at different trends on various news websites. I settled on comparing Politico, The New York Times, FOX News, and The Washington Post. On one particular day, I randomly chose 25 articles from each news site that were on the front page, and noted the number of pictures and comments that corresponded to each article. I have three hypotheses relating to my data. Firstly, I think that FOX News will have the most comments on their articles, as FOX is commonly known to be highly controversial. Secondly, the New York Times will most likely provide the most pictures to accompany their articles as this site is a particularly well known and acclaimed site and they probably will strive to make their articles visually appealing to the readers. Thirdly, as the number of pictures goes up, I hypothesize that the number of comments will also rise due to the fact that "a picture speaks a thousand words," and many people are moved by pictures in ways that words do not move them.
+
+## Methods
+
+To collect my data, I chose the four of the biggest news outlets in the country: the New York Times, the Washington Post, CNN, and FOX News. Unfortunately, I could not find any comment section on CNN, so I switched out that news site for Politico. I then went through and clicked on 25 random articles on each site that were linked to the home page, and collected data on the number of pictures and comments associated with each article. After collecting my data, I then input and analyzed the data into regression tables and graphics, which can be seen in the following sections.
+
+## Results
+
+The results of the data collection are as follows, shown through the use of regression tables and graphics.
+
+```{r}
+model <- lm_basic (comments ~ 1 +site, data = newsdata)
+reg_table (model, level = 0.95)
+```
+
+This first regression table above shows the mean of the number of comments split up by site. The intercept is showing the data from FOX News. As can be seen from the slope estimates and the confidence intervals, the differences between comments on each site are all statistically significant, and the number of comments on FOX News is statistically significantly higher than the comments on the other three sites. 
+
+```{r}
+ggplot(newsdata, aes(site, comments)) +
+  geom_boxplot () +
+  scale_y_log10() +
+  xlab ("News Site") +
+  ylab ("Number of Comments")
+```
+
+According to the above plot, the mean number of comments posted to the articles on FOX News are statistically significantly higher than the mean of the comments posted to the articles published on the other three sites. 
+
+
+```{r}
+model <- lm_basic (photos ~ 1 + site, data = newsdata)
+reg_table (model, level = 0.95)
+```
+
+This second regression table, seen above, again shows the intercept as FOX News. This data output shows that while the mean number of pictures is highest for the New York Times, the difference is not statistically significant.
+
+```{r}
+ggplot(newsdata, aes(site, photos)) +
+  geom_boxplot () +
+  xlab ("News Site") +
+  ylab ("Number of Photos")
+```
+
+As can be see in the graph above, the mean number of photos associated with articles published on the New York Times website are higher than the number of photos posted on the other sites, but the difference is not statistically significantly higher.
+
+```{r}
+model <- lm_basic (comments ~ 1 + photos, data = newsdata)
+reg_table (model, level = 0.95)
+```
+
+Above is the final regression table showing the relationship between photos and comments. The data shows that while there is a positive correlation between the two variables (when one goes up, so does the other), this trend is not statistically significant.
+
+```{r}
+ggplot(newsdata, aes(photos, comments)) +
+  geom_point() +
+  geom_smooth (method = "lm") +
+  xlab ("Number of Photos") +
+  ylab ("Number of Comments")
+```
+
+The graph above shows that as the number of photos on a news site increases, so does the number of comments associated with those articles, though the positive difference is not statistically significantly higher.
+
+## Conclusions
+
+The above regression tables and graphics support all three of my previous hypotheses, though in different ways. My first hypothesis, that FOX News would have the most comments associated with their articles was supported greatly, as the difference between comments on the other three sites were statistically significantly lower than the comments on FOX News.It is clear that the differences are statistically significant because the slopes (the data from the other three news sites) contains the number zero within the confidence interval. The same process for determining statistical significance is used to determine the significance of the following two hypotheses as well. The FOX News numbers regarding comments could also potentially support my claim that the reason FOX News has the greatest number of comments is due to its status as one of the most controversial news sites, which would therefore lead to various strong reactions to the content posted on the site. My second hypothesis, that the New York Times will have the greatest number of photos, is also supported by the data, though the difference in the number of photos per site is not statistically significant, as the means were very close. My third hypothesis, that as the number of photos increases, so will the number of comments, is also supported, though like my second hypothesis, the difference is not statistically significant, so there is not a clear enough correlation between the rise in the number of photos and the number of comments. 
+
+## References
+
+“Breaking News, World News & Multimedia.” The New York Times, The New York Times, www.nytimes.com/.
+
+“Fox News.” Fox News, FOX News Network, www.foxnews.com/.
+
+POLITICO, www.politico.com/.
+
+“Washington Post: Breaking News, World, US, DC News & Analysis.” The Washington Post, WP Company, www.washingtonpost.com/.
+
