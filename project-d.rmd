@@ -1,0 +1,103 @@
+---
+title: "The Regional Effect of Poverty on the Incidence of Lung Cancer"
+author: "Elise Wilson"
+output: html_document
+---
+
+```{r setup, include=FALSE, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+knitr::opts_chunk$set(out.width = "100%")
+knitr::opts_chunk$set(dpi = 300)
+
+library(readr)
+library(ggplot2)
+library(dplyr)
+library(ggmap)
+library(viridis)
+library(forcats)
+library(smodels)
+library(ggrepel)
+library(stringi)
+```
+
+
+
+```{r}
+cancer <- read_csv("https://statsmaths.github.io/stat_data/cancer_inc_data.csv")
+```
+
+##Introduction##
+
+Lung cancer is the largest killer of people in the United States, and in 2016 lung cancer accounted for 27% of cancer-related deaths (American Lung Association). Smoking is the leading cause of lung cancer, along with family history and also second-hand smoke inhalation (American Lung Association). The incidence of lung cancer in America is a major public health issue, as for decades officials have been campaigning to reduce the popularity of smoking across the country. These measures have been relatively effective, as smoking has decreased significantly since the mid-1900s, though clearly lung cancer is still incredibly prevalent, particularly in areas where there is no education surrounding the negative impacts of smoking and where cigarettes are cheap and widely available. The continual prevalence of lung cancer is the reason for this report. Through the use of the following graphics included in this report, I will attempt to support the thesis that as poverty rates get higher in particular regions, the incidence rate of lung cancer will also be higher in these areas.  
+
+```{r}
+lung_region <- group_summarize (cancer, region)
+```
+
+##Results##
+
+The graph below is a representation of the data broken down by region. It is fairly obvious to see that there is a positive relationship that shows that as the poverty rate increases, as does the incidence rate of lung cancer. The only major outlier here is the east south central region, here highlighted in red, which has the highest mean of households below the poverty line at over 20%, and also the highest mean of people with lung cancer, at just under 90%. 
+
+```{r}
+lung_region$rname <- stri_replace_all(lung_region$region, " ", fixed = "_")
+ggplot (lung_region, aes (poverty_mean, lung_mean)) +
+  geom_text_repel (aes (label = rname)) +
+  scale_x_continuous (limits = c (10, 26)) +
+  annotate("rect", xmin = 19.5, xmax = 23.5,
+                   ymin = 86, ymax = 89,
+                   fill = "red", alpha = 0.3) +
+  xlab ("Poverty Mean") +
+  ylab ("Lung Cancer Mean")
+```
+
+
+```{r}
+lung_state <- group_summarize (cancer, region, state)
+```
+
+```{r}
+esc_region <- filter (lung_state, state %in% c ("ky", "ms", "al", "tn"))
+```
+
+The following graph takes the same data set as the previous graph, but breaks the data down by state instead of by region. In the previous graph, the outlier for the highest rate of lung cancer and that had the highest poverty levels was the east south central region. This region includes the states of Tennessee, Mississippi, Alabama, and Kentucky. These states are highlighted in red above. This graph is a further representation that the states in this region can be considered outliers, particularly Mississippi and Kentucky. 
+
+```{r}
+ggplot (lung_state, aes (poverty_mean, lung_mean)) +
+  geom_text (aes (label = state)) +
+  geom_text (aes (label = state), color = "red", data = esc_region) +
+  xlab ("Poverty Mean") +
+  ylab ("Lung Cancer Mean")
+```
+
+
+```{r}
+lung_mainland <- filter (lung_state, !(state %in%c("hi", "ak")))
+```
+
+This third graph below portrays a map of the United States, with the larger points representing areas with higher poverty rates, and the brighter yellow the point, the higher the lung cancer mean rate. The map further proves that areas in and near the east south central region have higher poverty rates and higher incidence rates of lung cancer. Kentucky in particular, as in the previous graph, stands out as having close to a mean of 100% incidence rate of lung cancer.
+
+```{r}
+qmplot(lon_mean, lat_mean, data = lung_mainland, geom = "blank") +
+  geom_point(aes(color = lung_mean, size = poverty_mean), alpha = 1.0) +
+  scale_color_viridis() +
+  labs (size = "Poverty Mean", color = "Lung Cancer Mean")
+```
+
+The regression table shown below shows that for each region, the mean incidence rate of lung cancer in the east south central region (the region serving as the baseline), is statistically significantly higher than the mean incidence rates of lung cancer in the other eight regions. The table also shows that  the other eight regions have actually statistically significantly lower mean incidence rates of lung cancer than the east south central region, further proving that this region is a significant outlier and confirming the above stated thesis. 
+
+
+```{r}
+lung_state$esc_new <- fct_relevel(lung_state$region, "east_south_central")
+model <- lm_basic (lung_mean ~ 1 + esc_new, data = lung_state)
+reg_table (model, level = .95)
+```
+
+##Discussion##
+
+It is clear from the above graphics that there is a significant correlation between poverty rates in each region of the United States and incidence rates of lung cancer in these regions. Though it cannot be proven by the data, I believe this trend to occur due to bad lifestyle choices and a decreased quality/availability of public health initiatives and healthcare in these areas. As discussed in the introduction, smoking has been proven to be one of the most significant causes behind lung cancer incidence in the United States. Therefore, it is not surprising to me that the region of the country that includes some of the poorest people in the country has one of the highest lung cancer rates because there is a significant lack of public health education in these areas. Additionally, there is most likely much more access to cheap cigarettes and it is more likely that children living in these impoverished areas would be susceptible to second hand smoke from a young age. For these reasons, it is unsurprising that the data has shown that the east south central region, which includes Mississippi, Tennessee, Alabama, and Kentucky, is most at risk for lung cancer.
+
+##References##
+
+American Lung Association. “Lung Cancer Fact Sheet.” American Lung Association, www.lung.org/lung-health-and-diseases/lung-disease-lookup/lung-cancer/resource-library/lung-cancer-fact-sheet.html.
